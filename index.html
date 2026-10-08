@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ranchlivet 3D</title>
+<meta name="description" content="Heste- og ranchspil i 3D: pas dine dyr, rid i skoven og ved stranden, og tag til stævne.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<div id="hud" class="hidden">
+  <div id="clock" class="tag"><div id="tday"></div><div id="ttime"></div><div id="money"></div></div>
+  <div id="needs" class="tag"></div>
+  <div id="holding" class="tag hidden"></div>
+</div>
+<div id="side" class="hidden">
+  <div id="sidebtns"><button class="sbtn" id="pcB">Dyr ▾</button><button class="sbtn" id="helpB" aria-label="Hjælp">?</button><button class="sbtn" id="menuB" aria-label="Menu">☰</button></div>
+  <div id="alist" class="tag"></div>
+</div>
+<div id="toasts"></div>
+<div id="bottom" class="hidden"><div id="ride" class="tag hidden"></div><div id="acts"></div></div>
+<div id="task" class="tag hidden"><div id="taskL"></div><div class="bar"><i id="taskB"></i></div></div>
+<div id="joy" class="hidden"><div id="knob"></div></div>
+<div id="fade" class="hidden"><div id="fadeT"></div></div>
+<div id="modal" class="hidden"><div class="mbox"><button class="x" id="mx" aria-label="Luk">✕</button><div id="mbody"></div></div></div>
+
+<section id="title" class="screen">
+  <div>
+    <h1>Ranchlivet 3D</h1>
+    <p>Pas dine heste og dyr, ryd op i stalden, rid i skoven og ved stranden – og tag til stævne i weekenden.</p>
+    <button class="big" id="newB">Nyt spil</button>
+    <button class="big alt hidden" id="contB">Fortsæt</button>
+  </div>
+</section>
+
+<section id="creator" class="screen hidden">
+  <div class="wrap">
+    <h2 style="font-size:32px;color:#2d2416">Lav din person</h2>
+    <div class="cgrid">
+      <div class="card"><canvas id="pv" width="600" height="720"></canvas>
+        <div style="display:flex;gap:6px;margin-top:10px"><button class="big alt" id="randB" style="flex:1">Tilfældig</button></div></div>
+      <div class="card" id="copts"></div>
+    </div>
+    <div style="text-align:right;margin-top:14px"><button class="big" id="toPets">Vælg dine dyr</button></div>
+  </div>
+</section>
+
+<section id="pets" class="screen hidden">
+  <div class="wrap">
+    <h2 style="font-size:32px;color:#2d2416">Vælg race og navn til dine dyr</h2>
+    <p class="hint">Du starter med 2 heste, 1 hund, 1 kat og 2 kaniner. Flere dyr kan købes senere på computeren derhjemme.</p>
+    <div class="pgrid" id="pgrid"></div>
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><button class="big alt" id="backC">Tilbage</button><button class="big" id="startB">Flyt ind på ranchen</button></div>
+  </div>
+</section>
+
+<script src="vendor/three.min.js"></script>
+<script src="js/core.js"></script>
+<script src="js/data.js"></script>
+<script src="js/world.js"></script>
+<script src="js/state.js"></script>
+<script src="js/actions.js"></script>
+<script src="js/simulation.js"></script>
+<script src="js/render3d.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
