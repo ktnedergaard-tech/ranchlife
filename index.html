@@ -485,7 +485,7 @@ function makePerson(L){const g=new THREE.Group(),fem=L.body==='feminin',sw=fem?1
  const waistU=crop?.36:.27;
  const torsoM=TMAT('pt'+key0,SK,(c,W,H)=>{c.fillStyle=skirt?PC:PC;c.fillRect(0,0,W*.3,H);if(L.bottom==='jeans'||L.bottom==='ridebukser'){c.fillStyle='#3a2a1c';c.fillRect(W*.26,0,W*.035,H);}
   topPaint(c,W,H,W*(crop?.42:.28));if(crop){c.fillStyle=SK;c.fillRect(W*.3,0,W*.12,H);}});
- const T=[[0,29.6,-.3,4.2,3.6],[0,32,-.3,7.4*sw,5],[0,37,0,6.2*sw,4.3],[0,42,.2,6.9*sw,4.7],[0,46.5,fem?.7:.3,7.6*sw,fem?5.6:5.1],[0,51.5,0,8.4*sw,4.6],[0,54.2,0,4.6,3.6],[0,55.6,0,.5,.5]];
+ const T=[[0,29.6,-.3,4,3.4],[0,32,-.3,6.5*sw,4.5],[0,37,0,5.2*sw,3.8],[0,42,.2,5.6*sw,4.1],[0,46.5,fem?.6:.3,6*sw,fem?4.8:4.5],[0,51.5,0,6.7*sw,4],[0,54.2,0,3.8,3.1],[0,55.6,0,.5,.5]];
  const torso=TUBE(T,torsoM,g,{seg:6,M:20});
   if(L.top==='hættetrøje')sp(5.2,3.4,2.6,mat(shade(TC,-.08)),0,54.6,-4.6,g);
  if(skirt)mk(new THREE.CylinderGeometry(7.4,10.5,11,18,1,true),mat(PC,{roughness:.8,side:THREE.DoubleSide}),1,1,1,0,26.5,0,g);
@@ -518,8 +518,8 @@ function makePerson(L){const g=new THREE.Group(),fem=L.body==='feminin',sw=fem?1
  const helmet=new THREE.Group();head.add(helmet);mk(GEO.cap,'#1c1f26',5.9,6.7,6.2,0,1,-.1,helmet);const vz=bx(7,.5,3,'#1c1f26',0,1.6,5.8,helmet);vz.rotation.x=-.2;helmet.visible=false;
  // arme
  const sleeveM=mat(L.top==='vest'?'#e8e2d4':TC,{roughness:.8});
- const elbows=[];const arms=[1,-1].map(sd=>{const sh=new THREE.Group();sh.position.set(sd*8.6*sw,52,0);g.add(sh);
-  TUBE([[0,1.2,0,2.3,2.4],[0,-4,0,1.95,2],[0,-9.6,0,1.6,1.65]],armLong||!crop?sleeveM:skin,sh,{seg:4,M:12});
+ const elbows=[];const arms=[1,-1].map(sd=>{const sh=new THREE.Group();sh.position.set(sd*(6.7*sw+2.1),52,0);g.add(sh);
+  TUBE([[0,1.2,0,2.1,2.2],[0,-4,0,1.8,1.85],[0,-9.6,0,1.5,1.55]],armLong||!crop?sleeveM:skin,sh,{seg:4,M:12});
   const el=new THREE.Group();el.position.set(0,-10,0);sh.add(el);elbows.push(el);
   TUBE([[0,.6,0,1.6,1.65],[0,-4.5,.1,1.45,1.5],[0,-8.6,.2,1.1,1.15]],armLong?sleeveM:skin,el,{seg:4,M:12});
   if(L.top==='ridejakke'||L.hat==='hue')sp(1.35,1.9,1.05,'#1f1f22',0,-10,0,el);else sp(1.25,1.8,1,skin,0,-10,.1,el);return sh;});
@@ -541,7 +541,7 @@ function animPerson(P,o){const t=performance.now()/1000;
  P.helmet.visible=false;P.hat.visible=true;P.carry.visible=!!o.carry;
  const amp=o.run?.85:.5,s=o.moving?Math.sin(o.ph*PI2):0;
  P.legs.forEach((l,i)=>{const hx=s*amp*(i?1:-1);l.hip.rotation.set(hx,0,0);l.knee.rotation.set(Math.max(0,-hx)*1.1+(o.moving?.12:0),0,0);});
- P.arms.forEach((a,i)=>a.rotation.set(o.carry?-1.1:-s*amp*.75*(i?1:-1),0,(i?1:-1)*.07));P.elbows.forEach(e=>e.rotation.set(o.carry?-.4:o.moving?-.25:-.08,0,0));
+ P.arms.forEach((a,i)=>a.rotation.set(o.carry?-1.1:-s*amp*.75*(i?1:-1),0,(i?1:-1)*.09));P.elbows.forEach(e=>e.rotation.set(o.carry?-.4:o.moving?-.25:-.08,0,0));
  if(o.busy){P.arms.forEach((a,i)=>a.rotation.set(-.85+Math.sin(t*8+i*3)*.3,0,0));P.elbows.forEach(e=>e.rotation.set(-.6,0,0));}
  if(P.head.userData.tail)P.head.userData.tail.rotation.z=Math.sin(t*(o.moving?9:2))*.2;
  P.g.position.y+=o.moving?Math.abs(Math.sin(o.ph*PI2))*(o.run?2:.8):0;}
