@@ -651,20 +651,21 @@ function makeHorse(B,id){const g=new THREE.Group(),body=new THREE.Group();g.add(
    for(let j=0;j<=M;j++){const a=A0+(A1-A0)*j/M;pos.push(c.x+Math.cos(a)*rx,c.y+n.y*Math.sin(a)*ry,c.z+n.z*Math.sin(a)*ry);uv.push(ri/Math.max(1,R-1),j/M);}});
   for(let k=0;k<R-1;k++)for(let j=0;j<M;j++){const a=k*(M+1)+j,b=a+M+1;idx.push(a,b,a+1,b,b+1,a+1);}
   const g2=new THREE.BufferGeometry();g2.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g2.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g2.setIndex(idx);g2.computeVertexNormals();const o=new THREE.Mesh(g2,m);o.castShadow=true;o.receiveShadow=true;(par||sB).add(o);return o;};
+ const cvB=new THREE.CatmullRomCurve3(TP.map(q=>V(q[0],q[1],q[2])),false,'centripetal'),topAt=z=>{let bu=0,bd=1e9;for(let k=0;k<=300;k++){const c=cvB.getPoint(k/300),d=Math.abs(c.z-z);if(d<bd){bd=d;bu=k/300;}}const c=cvB.getPoint(bu),n=TP.length,f=bu*(n-1),i=Math.min(n-2,Math.floor(f)),t=f-i,q=k=>TP[clamp(k,0,n-1)][4],p0=q(i-1),p1=q(i),p2=q(i+1),p3=q(i+2);return c.y+.5*(2*p1+(-p0+p2)*t+(2*p0-5*p1+4*p2-p3)*t*t+(-p0+3*p1-3*p2+p3)*t*t*t);};
  {const T2=1.5*Math.PI,quilt=repMat('quilt',128,(c,sz)=>{c.fillStyle='#6a4f8c';c.fillRect(0,0,sz,sz);c.strokeStyle='rgba(30,18,50,.45)';c.lineWidth=3;for(let k=-sz;k<sz*2;k+=32){c.beginPath();c.moveTo(k,0);c.lineTo(k+sz,sz);c.stroke();c.beginPath();c.moveTo(k,sz);c.lineTo(k+sz,0);c.stroke();}},2.5,3,{side:THREE.DoubleSide,roughness:.85}),trim=mat('#2a1f3a',{side:THREE.DoubleSide,roughness:.7}),lea=mat('#1d1512',{side:THREE.DoubleSide,roughness:.45});
-  shellB(T2-1.12,T2+1.12,.45,quilt,-10,14.5);shellB(T2-1.15,T2-1.04,.62,trim,-10.1,14.6);shellB(T2+1.04,T2+1.15,.62,trim,-10.1,14.6);shellB(T2-1.15,T2+1.15,.6,trim,-10.3,-9.3);shellB(T2-1.15,T2+1.15,.6,trim,13.8,14.8);
+  shellB(T2-1.42,T2+1.42,.45,quilt,-13.5,17.5);shellB(T2-1.46,T2-1.34,.62,trim,-13.6,17.6);shellB(T2+1.34,T2+1.46,.62,trim,-13.6,17.6);shellB(T2-1.46,T2+1.46,.6,trim,-13.8,-12.8);shellB(T2-1.46,T2+1.46,.6,trim,16.8,17.8);
   [1,-1].forEach(sd=>{shellB(sd>0?T2+.62:T2-1.42,sd>0?T2+1.42:T2-.62,1,lea,-1.5,9.5);});
   shellB(.5*Math.PI-1.3,.5*Math.PI+1.3,.7,mat('#1a120e',{side:THREE.DoubleSide}),4.5,7.5);
   const sp5=TP.reduce((b,q)=>Math.abs(q[2]-5)<Math.abs(b[2]-5)?q:b,TP[0]),RX=sp5[3],CY=sp5[1];
   [1,-1].forEach(sd=>{bx(.6,17,1.2,'#1a120e',sd*(RX+1.4),CY-7.5,6,sB);mk(new THREE.TorusGeometry(2.1,.33,6,14),'#c8ccd0',1,1,1,sd*(RX+1.6),CY-17,6,sB);bx(1,.55,4,'#c8ccd0',sd*(RX+1.6),CY-19,6,sB);});}
- TUBE([[0,72.2,-11.5,.5,.5],[0,73.4,-9.6,6.2,2.3],[0,71.4,-4,8.6,1.7],[0,71.2,3,8.9,1.6],[0,72.2,9,6.4,2],[0,73,11.4,.5,.5]],mat('#1d1512',{roughness:.45}),saddle,{seg:6,M:18});
+ TUBE([[-11.5,1.3,.5,.5],[-9.6,2.3,6.2,2.3],[-4,1.05,8.6,1.7],[3,1,8.9,1.6],[9,1.65,6.4,2],[11.4,1.7,.5,.5]].map(q=>[0,topAt(q[0])+.45+q[1],q[0],q[2],q[3]]),mat('#1d1512',{roughness:.45}),sB,{seg:6,M:18});const seatY=topAt(2)+.45+1+1.6;
  saddle.scale.set(HQ.bw,HQ.bh,1);saddle.position.y=55*(1-HQ.bh);
  const tq=(a,b)=>new THREE.Quaternion().setFromUnitVectors(V(0,0,1),b.clone().sub(a).normalize());
  const strap=(col,th)=>{const gg=new THREE.Group();hI.add(gg);const nb=mk(new THREE.TorusGeometry(6,th,6,18),col,1,1,1,0,21,35,gg);nb.quaternion.copy(tq(V(0,38,18),V(0,16,40)));const bb=mk(new THREE.TorusGeometry(6.8,th,6,18),col,1,1,1,0,37,19.5,gg);bb.quaternion.copy(nb.quaternion);[-1,1].forEach(sd=>limb(V(sd*6.4,37,20),V(sd*5.6,22,34),th*.8,th*.8,col,gg));return gg;};
  const bridle=strap('#3b2416',.7);[-1,1].forEach(sd=>limb(V(sd*5,19,37),V(sd*6,9,-12),.5,.5,'#3b2416',bridle));
  const halter=strap('#2f6fb3',1);
  const headRef=new THREE.Object3D();headRef.position.set(0,16,38);hI.add(headRef);
- g.scale.setScalar(B.size*KS);return{kind:'horse',rug,g,body,neck,tail,legs,saddle,bridle,halter,headRef};}
+ g.scale.setScalar(B.size*KS);return{kind:'horse',rug,g,body,neck,tail,legs,saddle,bridle,halter,headRef,seatY};}
 function horseAngles(gt,ph,key,front,air){if(air)return front?[1.15,-.7]:[-.7,-.25];const amp=[0,.34,.5,.72][gt];
  const off=gt===1?{lh:0,lf:.25,rh:.5,rf:.75}:gt===2?{lf:0,rh:0,rf:.5,lh:.5}:gt===3?{lh:0,rh:.12,lf:.38,rf:.5}:{lh:0,lf:0,rh:0,rf:0};
  const p=(ph+off[key])*PI2,sw=Math.sin(p)*amp,bend=Math.max(0,Math.cos(p))*amp*1.5;return front?[sw,sw-bend]:[sw*.8-.08,sw*.8+bend*.55+.12];}
@@ -1088,7 +1089,7 @@ function render3D(t,dt){if(!S||!renderer)return;const p=S.p,play=mode==='play';c
  // player
  if(play){if(!playerM||playerM.key!==JSON.stringify(S.look)){if(playerM)scene.remove(playerM.g);playerM=makePerson(S.look);scene.add(playerM.g);}
   playerM.g.visible=true;const ra=p.ride&&animalById(p.ride);
-  if(ra&&MODELS.get(ra.id)){const hm=MODELS.get(ra.id);hm.body.localToWorld(_v.set(0,74,2));playerM.g.position.copy(_v);playerM.g.position.y-=30*KS;playerM.g.rotation.y=hm.g.rotation.y;animPerson(playerM,{ride:true});}
+  if(ra&&MODELS.get(ra.id)){const hm=MODELS.get(ra.id);hm.body.localToWorld(_v.set(0,hm.seatY||74,2));playerM.g.position.copy(_v);playerM.g.position.y-=30*KS;playerM.g.rotation.y=hm.g.rotation.y;animPerson(playerM,{ride:true});}
   else{playerM.g.position.set(p.x,0,p.y);playerM.g.rotation.y=angLerp(playerM.g.rotation.y,p.rot||0,.3);animPerson(playerM,{moving:p.moving,ph:p.ph,run:p.running,carry:!!p.carry,busy:!!p.busy});}
   const ld=p.lead&&animalById(p.lead),lm=ld&&MODELS.get(ld.id);if(lm&&lm.headRef){playerM.hand.getWorldPosition(_v);lm.headRef.getWorldPosition(_w);setRope(leadRope,_v,_w,8);leadRope.material.color.set(ld.kind==='horse'?'#2f6fb3':'#b8342a');}else leadRope.visible=false;}
  else if(playerM)playerM.g.visible=false;
@@ -1341,7 +1342,7 @@ function syncLessonL(L,slot){const key=L?L.day+'|'+L.key:'';let LM=LMS[slot];
  if(!L)return;
  L.riders.forEach((r,i)=>{const o=LM.list[i];if(!o)return;o.h.g.position.set(r.x,0,r.y);o.h.g.rotation.y=angLerp(o.h.g.rotation.y,r.rot||0,.2);
   animHorse(o.h,{gt:r.gt,phase:r.phase,jh:r.jh||0,airT:r.airT,bend:turnBend(o.h,o.h.g.rotation.y),saddle:true,bridle:true});if(r.buck>0)o.h.body.rotation.x=-Math.sin((1-r.buck/.9)*PI2)*.3;if(r.hop>0)o.h.g.position.y+=Math.sin((1-r.hop/.5)*Math.PI)*8;if(r.poopT>0)o.h.tail.rotation.x=-.8;
-  o.h.body.localToWorld(_v.set(0,74,2));o.p.g.position.copy(_v);o.p.g.position.y-=30*.8*KS;o.p.g.rotation.y=o.h.g.rotation.y;animPerson(o.p,{ride:true});
+  o.h.body.localToWorld(_v.set(0,o.h.seatY||74,2));o.p.g.position.copy(_v);o.p.g.position.y-=30*.8*KS;o.p.g.rotation.y=o.h.g.rotation.y;animPerson(o.p,{ride:true});
   o.lab.position.set(r.x,_v.y+40,r.y);o.bang.visible=!!r.help;o.bang.position.set(r.x,_v.y+58,r.y);});
  LM.parents.forEach(m=>animPerson(m,{moving:false}));
  if(LM.helper){const A=lessonArena(L),m=LM.helper;let tx=A.x+A.w/2+60,tz=A.y+A.h/2;if(L.help&&L.help.helper){const r=L.riders[L.help.i];if(r){tx=r.x+22;tz=r.y+22;}}else{const pl=(S.piles||[]).find(q=>inR(q.x,q.y,A));if(pl){tx=pl.x+8;tz=pl.y;if(Math.hypot(m.g.position.x-tx,m.g.position.z-tz)<6)S.piles=S.piles.filter(q=>q!==pl);}}
@@ -1477,7 +1478,7 @@ const PARTM=new Map();
 function syncPart(){const live=new Set();S.animals.forEach(a=>{if(!a.part||!(a.partOn||a.partMuck))return;if(a.kind==='horse'&&a.partOn&&a.state!=='part')return;if(a.partMuck&&a.state!=='box')return;live.add(a.id);let o=PARTM.get(a.id);
  if(!o){const m=makePerson(a.part.look);scene.add(m.g);const lab=labelSprite(a.part.name+' · part','rgba(47,90,138,.88)','#ffffff',56,14,'bold 28px Figtree, sans-serif');scene.add(lab);o={m,lab};PARTM.set(a.id,o);}
  if(a.partMuck){const b=BOXES[a.box],zz=b.y+(a.box<6?22:-22);o.m.g.position.set(b.x+30,0,zz);o.m.g.rotation.y=-Math.PI/2;animPerson(o.m,{busy:true});o.lab.position.set(b.x+30,80*KS,zz);}
- else if(a.kind==='horse'){const hm=MODELS.get(a.id);if(!hm)return;hm.body.localToWorld(_v.set(0,74,2));o.m.g.position.copy(_v);o.m.g.position.y-=30*KS;o.m.g.rotation.y=hm.g.rotation.y;animPerson(o.m,{ride:true});o.lab.position.set(a.x,_v.y+40,a.y);}
+ else if(a.kind==='horse'){const hm=MODELS.get(a.id);if(!hm)return;hm.body.localToWorld(_v.set(0,hm.seatY||74,2));o.m.g.position.copy(_v);o.m.g.position.y-=30*KS;o.m.g.rotation.y=hm.g.rotation.y;animPerson(o.m,{ride:true});o.lab.position.set(a.x,_v.y+40,a.y);}
  else{const x=CAGE.x+90-(a.id%3)*18;o.m.g.position.set(x,0,CAGE.y+170);o.m.g.rotation.y=Math.PI;animPerson(o.m,{busy:true});o.lab.position.set(x,80*KS,CAGE.y+170);}});
  PARTM.forEach((o,id)=>{if(!live.has(id)){scene.remove(o.m.g);scene.remove(o.lab);PARTM.delete(id);}});}
 
@@ -1571,7 +1572,7 @@ const FAMM=new Map();
 function syncFamily(){if(!S.family)return;const live=new Set();S.family.forEach((m,i)=>{if(i===S.cur)return;live.add(i);let o=FAMM.get(i);const key=JSON.stringify(m.look);
  if(!o||o.key!==key){if(o){scene.remove(o.m.g);scene.remove(o.lab);}const mm=makePerson(m.look);scene.add(mm.g);const lab=labelSprite(m.name,'rgba(20,28,18,.72)','#f3ead2',40,10,'bold 30px Figtree, sans-serif');scene.add(lab);o={m:mm,lab,key};FAMM.set(i,o);}
  const ai=m.ai||{},p=m.p;o.m.g.visible=!ai.sleep&&!ai.away;o.lab.visible=!ai.sleep&&!ai.away;
- if(ai.riding){const hm=MODELS.get(ai.riding);if(hm){hm.body.localToWorld(_v.set(0,74,2));o.m.g.position.copy(_v);o.m.g.position.y-=30*KS*(m.look.child?.8:1);o.m.g.rotation.y=hm.g.rotation.y;animPerson(o.m,{ride:true});o.lab.position.set(p.x,_v.y+40,p.y);return;}}
+ if(ai.riding){const hm=MODELS.get(ai.riding);if(hm){hm.body.localToWorld(_v.set(0,hm.seatY||74,2));o.m.g.position.copy(_v);o.m.g.position.y-=30*KS*(m.look.child?.8:1);o.m.g.rotation.y=hm.g.rotation.y;animPerson(o.m,{ride:true});o.lab.position.set(p.x,_v.y+40,p.y);return;}}
  o.m.g.position.set(p.x,0,p.y);o.m.g.rotation.y=angLerp(o.m.g.rotation.y,p.rot||0,.25);animPerson(o.m,{moving:p.moving,ph:p.ph||0,busy:!!p.busyA});o.lab.position.set(p.x,(m.look.child?62:76)*KS,p.y);});
  FAMM.forEach((o,i)=>{if(!live.has(i)){scene.remove(o.m.g);scene.remove(o.lab);FAMM.delete(i);}});}
 
@@ -1955,7 +1956,7 @@ function startMinigame(a,mode2,s){const isH=a.kind==='horse';const n=isH?8:10;co
    M.obs.forEach(o=>{if(!o.done&&Math.abs(o.x-M.x)<ax&&M.z<oh&&!o.hit){o.hit=true;M.faults+=4;snd('bad');o.j.poles.forEach((p,k)=>{if(k===0||!isH){p.position.y=2;p.position.x+=8;p.rotation.z=.15;}});}if(!o.done&&o.x<M.x-ax){o.done=true;if(!o.hit)snd('ok');}});
    if(M.x>=M.end){M.done=true;setTimeout(()=>endMg(M,s,mode2),700);}}
   const zz=M.z*vis;m.g.position.set(M.x,isH?0:zz+Math.abs(Math.sin(M.ph*Math.PI))*3,0);
-  if(isH){animHorse(m,{gt:3,phase:M.ph,jh:M.z>.5?vz0*vz0/(2*grav):0,airT:clamp((vz0-M.vz)/(2*vz0),0,1),saddle:true,bridle:true});m.body.localToWorld(_v.set(0,74,2));rider.g.position.copy(_v);rider.g.position.y-=30;rider.g.rotation.y=Math.PI/2;animPerson(rider,{ride:true});}
+  if(isH){animHorse(m,{gt:3,phase:M.ph,jh:M.z>.5?vz0*vz0/(2*grav):0,airT:clamp((vz0-M.vz)/(2*vz0),0,1),saddle:true,bridle:true});m.body.localToWorld(_v.set(0,m.seatY||74,2));rider.g.position.copy(_v);rider.g.position.y-=30;rider.g.rotation.y=Math.PI/2;animPerson(rider,{ride:true});}
   if(isH){cam.position.set(M.x+95,78,430);cam.lookAt(M.x+135,52,0);}else{cam.position.set(M.x+30,28,150);cam.lookAt(M.x+48,11,0);}
   dl.position.set(M.x-200,600,400);dl.target.position.set(M.x,0,0);
   MGR.render(sc,cam);info.textContent='Fejl: '+M.faults+'   ·   Tid: '+M.t.toFixed(1)+' s';
