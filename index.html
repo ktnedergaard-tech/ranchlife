@@ -529,8 +529,9 @@ const HSH={dv:{nl:1.08,hl:1.04,hw:.96},frieser:{bw:1.05,bh:1.05,nw:1.12,nl:1.12,
  qh:{bw:1.12,bh:1.04,nw:1.1,nl:.9,hl:.86,hw:1.04},appa:{bw:1.04,nl:.96,hl:.96},conne:{bw:1.05,nl:.95,hl:.92},welsh:{bw:1.05,bh:1.03,nl:.95,hl:.82,hw:.95,prof:-.6,ear:.85},
  tinker:{bw:1.15,bh:1.1,nw:1.25,nl:.9,hl:1.02,hw:1.1,prof:.6,fth:2,mane:'xlong',tail:'long'}};
 function makeHorse(B,id){const g=new THREE.Group(),body=new THREE.Group();g.add(body);const HQ=Object.assign({bw:1,bh:1,nw:1,nl:1,hl:1,hw:1,prof:0},HSH[B.id]||{});
- const NT=(y,z)=>y<-6?[y,z]:[-6+(y+6)*HQ.nl,-6+(z+6)*HQ.nl];
- const gl={roughness:.42,metalness:.06},coat=mat(B.coat,gl),mane=mat(B.mane,{roughness:.55}),legm=mat(B.legs,gl),hoof=mat('#2a2420'),dkc=shade(B.coat,-.12);
+ HQ.bw*=1.06;HQ.bh*=1.12;HQ.nl*=.9;HQ.nw*=1.14;HQ.hl*=.93;HQ.hw*=.95;const LEAN=.24,cL=Math.cos(LEAN),sL=Math.sin(LEAN);
+ const NT=(y,z)=>{if(y<-6)return[y,z];const dy=(y+6)*HQ.nl,dz=(z+6)*HQ.nl,an=LEAN*Math.min(1,Math.pow(Math.max(0,y+6)/44,1.4)),c=Math.cos(an),sn=Math.sin(an);return[-6+dy*c-dz*sn,-6+dz*c+dy*sn];};
+ const gl={roughness:.3,metalness:.08},coat=mat(B.coat,gl),mane=mat(B.mane,{roughness:.5,metalness:.04}),legm=mat(B.legs,gl),hoof=mat('#2a2420'),dkc=shade(B.coat,-.12);
  const seg=(p1,p2,r1,r2,m,par,c1,c2)=>{const len=p1.distanceTo(p2);const gg=new THREE.CylinderGeometry(r2,r1,len,16,1,true);gg.translate(0,len/2,0);const o=new THREE.Mesh(gg,asM(m));o.position.copy(p1);o.quaternion.setFromUnitVectors(UPV,p2.clone().sub(p1).normalize());o.castShadow=true;par.add(o);if(c1){const c=sp(r1,r1,r1,m,p1.x,p1.y,p1.z,par);c.castShadow=false;}if(c2){const c=sp(r2,r2,r2,m,p2.x,p2.y,p2.z,par);c.castShadow=false;}return o;};
  const el=(rx,ry,rz,m,x,y,z,ax,par)=>{const o=sp(rx,ry,rz,m,x,y,z,par||body);if(ax)o.rotation.x=ax;return o;};
  const tube=(pts,m,par)=>{const P=pts.map(q=>V(q[0],q[1],q[2]));const cv=new THREE.CatmullRomCurve3(P,false,'centripetal');const N=(pts.length-1)*16,M=32,pos=[],idx=[];const side=V(1,0,0);
@@ -544,35 +545,39 @@ function makeHorse(B,id){const g=new THREE.Group(),body=new THREE.Group();g.add(
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();const o=new THREE.Mesh(g,asM(m));o.castShadow=true;o.receiveShadow=true;par.add(o);return o;};
  // krop
  const spotM=(key,n,big)=>B.spots?paintMat('hs'+key+B.coat+B.spots+id,B.coat,(g,W,H)=>{const r=seeded(id*13+key.length*7+5);for(let i=0;i<n;i++){const u=key==='t'?Math.pow(r(),1.4):r(),top=r()<.75,v=top?.75+(r()-.5)*.55:r(),rr=(big?5+r()*5:1.2+r()*1.3);uvBlob(g,W,H,u,v,rr/(key==='t'?70:46),rr/(key==='t'?80:40),B.spots,big?.6:.25);}},{w:512,h:256,flip:false,m:{roughness:.42,metalness:.06}}):coat;
- const TP=[[0,58,-37.5,1.65,1.5],[0,58,-35,8.25,9],[0,57.5,-29,12.1,12],[0,57,-20,13.53,12.8],[0,55.5,-8,13.64,13.4],[0,55,4,13.86,14],[0,56,14,13.42,14],[0,55.5,22,11.66,12.8],[0,54,27,9.24,10],[0,52.5,29.6,4.95,5.5],[0,52,30.6,0.55,.5]];TP.forEach(p=>{p[3]*=HQ.bw;p[4]*=HQ.bh;});tube(TP,HQ.dorsal?paintMat('dors'+B.coat+B.mane,B.coat,(g,W,H)=>uvBand(g,W,H,0,1,.75,.022,shade(B.mane,-.65),0),{w:512,h:256,flip:false,m:{roughness:.42,metalness:.06}}):spotM('t',B.feather?16:80,!!B.feather),body);
+ const TP=[[0,58,-37.5,1.65,1.5],[0,58,-35.6,9.6,10.6],[0,57.8,-30,13.1,13.1],[0,57,-20,13.53,12.8],[0,55.5,-8,13.64,13.4],[0,55,4,13.86,14],[0,56,14,13.42,14],[0,55.5,22,11.66,12.8],[0,53.4,27,10.6,11.6],[0,52,30.2,6.2,6.6],[0,52,30.6,0.55,.5]];TP.forEach(p=>{p[3]*=HQ.bw;p[4]*=HQ.bh;});tube(TP,HQ.dorsal?paintMat('dors'+B.coat+B.mane,B.coat,(g,W,H)=>uvBand(g,W,H,0,1,.75,.022,shade(B.mane,-.65),0),{w:512,h:256,flip:false,m:{roughness:.42,metalness:.06}}):spotM('t',B.feather?16:80,!!B.feather),body);
  {const HS=new THREE.SphereGeometry(1,32,24);const hel=(rx,ry,rz,x,y,z,ax,par)=>{const o=new THREE.Mesh(HS,coat);o.scale.set(rx,ry,rz);o.position.set(x,y,z);if(ax)o.rotation.x=ax;o.castShadow=true;o.receiveShadow=true;(par||body).add(o);return o;};
   body.userData.hel=hel;}
  // hals og hoved
  const neck=new THREE.Group();neck.position.set(0,60,23);body.add(neck);
  tube([[0,-15,-13,6,6],[0,-6,-6,10.8,11.8],[0,6,1,9.6,9.6],[0,18,8,7.6,7.6],[0,28,13,6.3,6.6],[0,35,16.5,5.6,6],[0,38,18,2,2]].map(p=>{const[y,z]=NT(p[1],p[2]);const fN=p[1]<-10?1:p[1]<0?1+(HQ.nw-1)*.4:p[1]<30?HQ.nw:1;return[0,y,z,p[3]*fN,p[4]*fN];}),spotM('n',B.feather?5:22,!!B.feather),neck);
- const PT=NT(38,17.5);body.userData.hel(5.6,6.2,6,0,PT[0],PT[1],0,neck);const PL=NT(40,17),hG=new THREE.Group();neck.add(hG);hG.position.set(0,PL[0],PL[1]);hG.scale.set(HQ.hw,HQ.hl,HQ.hl);const hI=new THREE.Group();hI.position.set(0,-40,-17);hG.add(hI);
+ const PT=NT(38,17.5);body.userData.hel(5.6,6.2,6,0,PT[0],PT[1],0,neck);const PL=NT(40,17),hG=new THREE.Group();neck.add(hG);hG.position.set(0,PL[0],PL[1]);hG.scale.set(HQ.hw,HQ.hl,HQ.hl);hG.rotation.x=.26;const hI=new THREE.Group();hI.position.set(0,-40,-17);hG.add(hI);
  const PB=HQ.prof>0?[0,0,.1,.4,.9,1.1,.5,0,0,0]:[0,0,0,.5,1,1,.3,0,0,0];tube([[0,42,15.5,1.5,1.5],[0,40,17,5.2,5.8],[0,35.2,19.2,5.7,7.4],[0,30.4,23.4,5.5,6.6],[0,26,28.5,4.6,5.4],[0,21,33.5,4.1,4.6],[0,17,38,4.2,4.4],[0,15,41,4.6,4.4],[0,13.6,43.2,3.4,2.6],[0,13.1,43.9,.8,.8]].map((p,i)=>[0,p[1]+PB[i]*HQ.prof*1.3*.7,p[2]+PB[i]*HQ.prof*1.3*.71,p[3],p[4]]),B.blaze?paintMat('bl'+B.coat,B.coat,(g,W,H)=>{g.fillStyle='#f3efe6';g.beginPath();const P2=[[.08,.025],[.3,.05],[.55,.03],[.8,.032],[1,.06]];P2.forEach(([u,w],i)=>i?g.lineTo(u*W,(.75-w)*H):g.moveTo(u*W,(.75-w)*H));P2.slice().reverse().forEach(([u,w])=>g.lineTo(u*W,(.75+w)*H));g.fill();},{flip:false,m:{roughness:.42,metalness:.06}}):coat,hI);
  el(4.7,4.2,4.3,dkc,0,15.4,41,-.7,hI);el(3.8,2.2,3.8,dkc,0,12.9,39.2,-.5,hI);
  [-1,1].forEach(sd=>{
   const e=cone(1.9,7.5,coat,sd*3,44,16,hI);e.rotation.z=-sd*.22;e.rotation.x=-.2;e.scale.setScalar(HQ.ear||1);
-  el(1.05,1.25,1.1,'#120d0b',sd*4.95,31.8,23.4,0,hI);el(.32,.32,.25,'#ffffff',sd*5.5,32.3,24,0,hI);
+  el(1.3,1.5,1.3,'#1f120a',sd*4.95,31.9,23.4,0,hI);el(.46,.46,.3,'#ffffff',sd*5.72,32.6,24.1,0,hI);el(.2,.2,.14,'#ffffff',sd*5.6,31.3,24.5,0,hI);
+  for(let k=0;k<4;k++)limb(V(sd*5.5,33.2,22.4+k*.75),V(sd*6.7,34.1,21.9+k*.95),.11,.05,'#140d08',hI);
   el(1.1,1.5,1.1,'#1b1311',sd*2.9,15.6,43.4,0,hI);});
- const MS=HQ.mane||(B.longMane?'long':'norm'),ml={long:16,xlong:22,thick:13,roach:6.5,norm:7}[MS],mw=MS==='thick'||B.thick?3.6:MS==='roach'?3.4:2.4,mside=MS==='roach'?0:(MS==='norm'?1.2:3.8);
- for(let i=0;i<=12;i++){const t=i/12;const[y,z]=NT(lerp(39,4,t),lerp(15,-7,t)+Math.sin(t*Math.PI)*1.5*HQ.nw);const hh=ml*(.9+(i%3)*.06)*(MS==='roach'?1-t*.3:1);
-  if(MS==='roach'){const m=bx(mw,hh,4,mane,0,y+hh/2-1.5+HQ.nw*1.5,z-1,neck);m.rotation.x=-.25;const d=bx(1,hh+.6,4.2,'#2a2016',0,y+hh/2-1.2+HQ.nw*1.5,z-1,neck);d.rotation.x=-.25;}
-  else{const m=bx(mw,hh,4,mane,mside,y-hh/2+3,z,neck);m.rotation.x=.45;}}
- const fl=bx(3,MS==='xlong'||MS==='thick'?14:MS==='roach'?5:9,3,mane,0,38.5,22,hI);fl.rotation.x=.9;
+ const MS=HQ.mane||(B.longMane?'long':'norm'),ml={long:18,xlong:26,thick:15,roach:6.5,norm:9}[MS],mwd=(MS==='thick'||B.thick?1.3:1),crest=t=>{const[y,z]=NT(lerp(39,4,t),lerp(15,-7,t)+Math.sin(t*Math.PI)*1.5*HQ.nw);return[y,z,lerp(5.4,9.6,t)*HQ.nw];};
+ if(MS==='roach'){const P=[],Q=[];for(let i=0;i<=8;i++){const[y,z]=crest(i/8);P.push([0,y+1.2,z-.4,1.5,3.6*(1-i/8*.35)]);Q.push([0,y+1.6,z-.4,.55,4.1*(1-i/8*.35)]);}TUBE(P,mane,neck,{seg:4,M:10});TUBE(Q,'#2a2016',neck,{seg:4,M:8});}
+ else{const NS=24;for(let L=0;L<2;L++)for(let i=0;i<NS;i++){const t=(i+L*.5)/NS;if(t>1)continue;const[y,z,R]=crest(t),len=ml*(L?.7:1)*(.88+((i*7)%5)*.05),wv=Math.sin(i*1.7+L)*.8;
+   const xs=d=>{const q=Math.max(0,R*R-Math.pow(R-Math.min(d,R),2));return Math.min(R+1.1,Math.sqrt(q)+.9+L*.25);};
+   const P=[[.5,y+1.3,z,.85,3.9*mwd],[xs(len*.3)-.1,y-len*.3,z-.6+wv*.3,.95,4*mwd],[xs(len*.66),y-len*.66,z-1.2+wv,.85,3.4*mwd],[xs(len)+.2,y-len,z-1.6+wv*.6,.25,.7]];
+   TUBE(P,mane,neck,{seg:4,M:8});}}
+ {const fl=MS==='xlong'||MS==='thick'?1.45:MS==='roach'?.55:1;[-1.3,0,1.3].forEach(x=>TUBE([[x,45.6,18.4,.9,2.1],[x*1.1,43.6-3.6*fl,18.4+5.6*fl,.85,2],[x*1.2,43.6-7.6*fl,18.4+9.8*fl,.6,1.5],[x*1.25,43.6-9.8*fl,18.4+11.4*fl,.2,.3]],mane,hI,{seg:4,M:8}));}
  // hale
  const tail=new THREE.Group();tail.position.set(0,64+(HQ.tailUp?2:0)+(HQ.bh-1)*10,-36*HQ.bw/HQ.bw);body.add(tail);const tI=new THREE.Group();tI.rotation.x=-(HQ.tailUp||0);tail.add(tI);sp(3.6,3.6,3.6,mane,0,0,0,tI);
- const tl=(B.longMane?46:36)+(HQ.tail==='long'?8:0),tw=(B.thick?1.25:1)*(HQ.tail==='long'?1.15:1);seg(V(0,0,0),V(0,-8,-5),3.4*tw,3*tw,mane,tI);[[0,0],[-1.4,.5],[1.4,.4],[0,-.7]].forEach(([dx,dz],k)=>seg(V(dx*.3,-7,-4.6),V(dx*(1.3+k*.2),-tl+k*2,-8+dz),2.5*tw,1.1*tw,mane,tI));
+ const tl=(B.longMane?50:42)+(HQ.tail==='long'?8:0),tw=(B.thick?1.25:1)*(HQ.tail==='long'?1.15:1);TUBE([[0,1,1,3.3*tw,3.3*tw],[0,-3,-2.6,3.1*tw,3.1*tw],[0,-8,-5,2.7*tw,2.7*tw],[0,-10,-5.8,1,1]],mane,tI,{seg:5,M:12});
+ for(let k=0;k<9;k++){const a=k/9*PI2,dx=Math.cos(a)*1.6*tw,dz=Math.sin(a)*1.2,wv=Math.sin(k*2.3)*1.2,l=tl*(.86+((k*5)%4)*.05);TUBE([[dx*.5,-4,-3.5+dz*.3,1.5*tw,1.9*tw],[dx*1.1,-10,-6.4+dz,1.9*tw,2.5*tw],[dx*1.5+wv*.4,-l*.55,-8.6+dz+wv,1.8*tw,2.3*tw],[dx*1.7+wv*.6,-l*.85,-8+dz+wv*.5,1.2*tw,1.6*tw],[dx*1.8+wv*.7,-l,-7.3+dz,.3,.4]],mane,tI,{seg:4,M:8});}
  // ben
  const mkLeg=(x,z,y,front)=>{const hip=new THREE.Group();hip.position.set(x,y,z);body.add(hip);const l1=front?17:21,kz=front?.5:-2.5;
-  if(front)tube([[0,10,-1,3.6,4.4],[0,5,-1,4.4,5.6],[0,-5,0,3.8,4.6],[0,-13,.4,3.1,3.4],[0,-17,.5,2.9,3.1]],coat,hip);
-  else tube([[0,11,1,3.8,5.5],[0,4,0,5,7.6],[0,-6,-.6,4.5,6.4],[0,-14,-1.8,3.3,4.2],[0,-21,-2.5,2.7,3.2]],coat,hip);
+  if(front)tube([[0,10,-1,4.2,5.2],[0,5,-1,5,6.4],[0,-5,0,4.1,4.9],[0,-13,.4,2.8,3.1],[0,-17,.5,2.6,2.8]],coat,hip);
+  else tube([[0,11,1,4.6,6.6],[0,4,0,5.8,8.6],[0,-6,-.6,4.9,7],[0,-14,-1.8,3.1,4],[0,-21,-2.5,2.5,3]],coat,hip);
   const knee=new THREE.Group();knee.position.set(0,-l1,kz);hip.add(knee);
-  el(front?3:2.9,3.3,front?3.2:3.4,legm,0,0,front?.1:-.3,0,knee);if(!front)el(1.2,1.8,1.6,legm,0,1,-3,0,knee);
-  tube([[0,0,0,2.8,3],[0,-6,0,2.3,2.6],[0,-12.6,0,2.3,2.5],[0,-14.2,.4,2.8,3.1],[0,-17,1,2.4,2.6],[0,-20,1.9,2.6,2.8]],legm,knee);
-  if(B.feather){const fs=HQ.fth===2?1.25:1;tube([[0,-11,.2,2.5,2.7],[0,-15,.4,2.9*fs,3.2*fs],[0,-18.5,.6,3.7*fs,4.1*fs],[0,-20.6,.9,4.3*fs,4.6*fs],[0,-21,1,.6,.6]],HQ.fth===2?shade(B.legs,.12):mane,knee);}
+  el(front?2.75:2.7,3,front?2.95:3.1,legm,0,0,front?.1:-.3,0,knee);if(!front)el(1.2,1.8,1.6,legm,0,1,-3,0,knee);
+  tube([[0,0,0,2.6,2.9],[0,-6,0,2,2.3],[0,-12.6,0,2,2.25],[0,-14.2,.4,2.6,2.9],[0,-17,1,2.2,2.4],[0,-20,1.9,2.5,2.7]],legm,knee);
+  if(B.feather){const fs=HQ.fth===2?1.25:1;tube([[0,-11,.2,2.5,2.7],[0,-15,.4,2.9*fs,3.2*fs],[0,-18.5,.6,3.7*fs,4.1*fs],[0,-20.6,.9,4.3*fs,4.6*fs],[0,-21,1,.6,.6]],mane,knee);}
   mk(new THREE.CylinderGeometry(2.7,3.6,3.6,20),hoof,1,1,1,0,-22.2,2,knee);return{hip,knee};};
  const LX=.7+.3*HQ.bw,legs={lf:mkLeg(5.8*LX,22,41,true),rf:mkLeg(-5.8*LX,22,41,true),lh:mkLeg(5.9*LX,-25,45,false),rh:mkLeg(-5.9*LX,-25,45,false)};
  const rug=new THREE.Group();body.add(rug);{const rm=new THREE.MeshStandardMaterial({color:'#2f5a8a',roughness:.95,side:THREE.DoubleSide});
