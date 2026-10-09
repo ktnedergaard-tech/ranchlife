@@ -507,8 +507,8 @@ function makePerson(L){const g=new THREE.Group(),fem=L.body==='feminin',sw=fem?1
  if(st!=='skaldet'){{const hk=L.hat!=='ingen'?.9:1,noB=!(L.bangs?L.bangs==='med':!fem)&&L.hat==='ingen'&&st!=='kort',shG=new THREE.Group();head.add(shG);const tied=noB&&['hestehale','fletning','knold'].includes(st);if(tied){const key='hairTied'+hairC;if(!PMAT[key]){const W2=256,H2=256,c=document.createElement('canvas');c.width=W2;c.height=H2;const q=c.getContext('2d'),r=seeded(hairC.length*53+11);q.fillStyle=hairC;q.fillRect(0,0,W2,H2);
    for(let i=0;i<1400;i++){const y=r()*H2,x0=-10+r()*W2*.3,x1=x0+40+r()*W2*.6,lt=r()<.45;q.strokeStyle=lt?'rgba(255,240,220,'+(.05+r()*.14)+')':'rgba(0,0,0,'+(.06+r()*.2)+')';q.lineWidth=.4+r()*1.1;q.beginPath();q.moveTo(x0,y);q.quadraticCurveTo((x0+x1)/2,y+(r()-.5)*4,x1,y+(r()-.5)*3);q.stroke();}
    const gr=q.createLinearGradient(0,0,W2*.3,0);gr.addColorStop(0,'rgba(255,245,230,0)');gr.addColorStop(.6,'rgba(255,245,230,.16)');gr.addColorStop(1,'rgba(255,245,230,0)');q.fillStyle=gr;q.fillRect(0,0,W2,H2);
-   const HLp=[[0,3.9],[.5,3.5],[.9,2.4],[1.25,1.2],[1.55,.9],[1.85,-.6],[2.2,-2],[2.7,-3.7],[3.15,-4.4]],ys=[6.1,5.2,2.6,-.4,-2.9,-4.9,-5.9];
-   q.globalCompositeOperation='destination-out';q.fillStyle='#000';for(let py=0;py<H2;py++){const a=(py+.5)/H2*PI2;let ph=Math.abs(((a-1.5*Math.PI)%PI2+PI2*1.5)%PI2-Math.PI);let yh=HLp[HLp.length-1][1];for(let k=0;k<HLp.length-1;k++)if(ph>=HLp[k][0]&&ph<=HLp[k+1][0]){const f=(ph-HLp[k][0])/(HLp[k+1][0]-HLp[k][0]);yh=HLp[k][1]+(HLp[k+1][1]-HLp[k][1])*f;break;}
+   const HLp=[[0,3.75],[.3,3.68],[.6,3.4],[.85,2.95],[1.05,2.35],[1.25,1.7],[1.45,1.15],[1.65,.6],[1.9,-.4],[2.2,-1.8],[2.5,-3],[2.8,-3.9],[3.15,-4.4]],ys=[6.1,5.2,2.6,-.4,-2.9,-4.9,-5.9];
+   q.globalCompositeOperation='destination-out';q.fillStyle='#000';for(let py=0;py<H2;py++){const a=(py+.5)/H2*PI2;let ph=Math.abs(((a-1.5*Math.PI)%PI2+PI2*1.5)%PI2-Math.PI);let yh=HLp[HLp.length-1][1];for(let k=0;k<HLp.length-1;k++)if(ph>=HLp[k][0]&&ph<=HLp[k+1][0]){const f=.5-.5*Math.cos(Math.PI*(ph-HLp[k][0])/(HLp[k+1][0]-HLp[k][0]));yh=HLp[k][1]+(HLp[k+1][1]-HLp[k][1])*f;break;}
     let u=1;for(let k=0;k<ys.length-1;k++)if(yh<=ys[k]&&yh>=ys[k+1]){u=(k+(ys[k]-yh)/(ys[k]-ys[k+1]))/6;break;}const xh=u*W2+(r()-.5)*2.5;q.fillRect(xh,py,W2,1);}q.globalCompositeOperation='source-over';
    const t=new THREE.CanvasTexture(c);t.flipY=false;t.anisotropy=4;PMAT[key]=new THREE.MeshStandardMaterial({map:t,alphaTest:.5,roughness:.55,metalness:0});}
   TUBE(HD.map(q=>[q[0],q[1],q[2],q[3]+.13,q[4]+.13]),PMAT[key],head,{seg:6,M:28});}else{if(noB){shG.position.set(0,4,0);shG.rotation.x=-.22;}TUBE(noB?[[0,2.55,-.3,.5,.5],[0,1.75,-.32,3.95,4.15],[0,.3,-.28,4.85,5.25],[0,-.95,-.2,5,5.42],[0,-1.4,-.18,4.9,5.3],[0,-1.9,-.1,4.1,4.5]]:[[0,6.75*hk,-.35,.5,.5],[0,5.7*hk,-.4,4.15*hk,4.35*hk],[0,4.2,-.3,5*hk,5.5*hk],[0,2.9,-.2,5.2*(hk*.5+.5),5.75*(hk*.5+.5)],[0,2.4,-.2,.6,.6]],hairT,shG,{seg:5,M:24});if(noB)sp(4.8,4.4,4.85,hairT,0,1.2,-1.2,head);else sp(5.05,4.6,5.1,hairT,0,1.4,-1.35,head);}}
@@ -567,8 +567,8 @@ function animPerson(P,o){const t=performance.now()/1000;
  P.helmet.visible=false;P.hat.visible=true;P.carry.visible=!!o.carry;
  const amp=o.run?.85:.5,s=o.moving?Math.sin(o.ph*PI2):0;
  P.legs.forEach((l,i)=>{const hx=s*amp*(i?1:-1);l.hip.rotation.set(hx,0,0);l.knee.rotation.set(Math.max(0,-hx)*1.1+(o.moving?.12:0),0,0);});
- P.arms.forEach((a,i)=>a.rotation.set(o.carry?-1.1:-s*amp*.75*(i?1:-1),0,(i?1:-1)*.09));P.elbows.forEach(e=>e.rotation.set(o.carry?-.4:o.moving?-.25:-.08,0,0));
- if(o.busy){P.arms.forEach((a,i)=>a.rotation.set(-.85+Math.sin(t*8+i*3)*.3,0,0));P.elbows.forEach(e=>e.rotation.set(-.6,0,0));}
+ P.arms.forEach((a,i)=>a.rotation.set(o.carry?-1.1:-s*amp*.75*(i?1:-1),0,(i?1:-1)*.09));P.elbows.forEach((e,i)=>e.rotation.set(o.carry?-.4:o.moving?-.25:-.08,0,(i?1:-1)*.07));
+ if(o.busy){P.arms.forEach((a,i)=>a.rotation.set(-.85+Math.sin(t*8+i*3)*.3,0,0));P.elbows.forEach((e,i)=>e.rotation.set(-.6,0,(i?1:-1)*.07));}
  if(P.head.userData.tail)P.head.userData.tail.rotation.z=Math.sin(t*(o.moving?9:2))*.2;
  P.g.position.y+=o.moving?Math.abs(Math.sin(o.ph*PI2))*(o.run?2:.8):0;}
 
