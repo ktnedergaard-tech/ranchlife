@@ -492,11 +492,13 @@ function makePerson(L){const g=new THREE.Group(),fem=L.body==='feminin',sw=fem?1
  TUBE([[0,54.6,.2,2.4,2.4],[0,58.6,.5,2.2,2.3],[0,60,.6,.4,.4]],skin,g,{seg:4,M:12});
  // hoved
  const head=new THREE.Group();head.position.set(0,63.6,.6);g.add(head);
- const HD=[[0,6.1,-.3,.5,.5],[0,5.2,-.3,3.7,3.9],[0,2.6,0,4.75,5.3],[0,-.4,.2,4.6,5.25],[0,-2.9,.8,3.85,4.6],[0,-4.9,1.3,2.7,3.4],[0,-6,1.6,.4,.4]];TUBE(HD,skin,head,{seg:6,M:22});
+ const HD=[[0,6.1,-.3,.5,.5],[0,5.2,-.3,3.7,3.9],[0,2.6,0,4.75,5.3],[0,-.4,.25,4.65,5.3],[0,-2.9,.9,3.75,4.55],[0,-4.9,1.45,2.25,3.2],[0,-5.9,1.75,.4,.4]];
+ const faceM=paintMat('face'+SK+(fem?1:0),SK,(c,W,H)=>{const r=seeded(SK.length*17+3);c.fillStyle=fem?'rgba(220,110,110,.22)':'rgba(200,110,100,.12)';[.6,.9].forEach(v=>{c.beginPath();c.ellipse(.56*W,v*H,.07*W,.08*H,0,0,PI2);c.fill();});c.fillStyle=shade(SK,-.22);for(let i=0;i<(fem?38:20);i++){const u=.48+r()*.12,v=.75+(r()-.5)*.3;c.globalAlpha=.25+r()*.35;c.beginPath();c.arc(u*W,v*H,.6+r()*.7,0,PI2);c.fill();}c.globalAlpha=1;},{w:128,h:128,flip:false,m:{roughness:.6}});TUBE(HD,faceM,head,{seg:6,M:22});
  const fz=(x,y)=>{for(let i=0;i<HD.length-1;i++){const a=HD[i],b=HD[i+1];if(y<=a[1]&&y>=b[1]){const u=(a[1]-y)/(a[1]-b[1]),cz=lerp(a[2],b[2],u),rx=lerp(a[3],b[3],u),rz=lerp(a[4],b[4],u);return cz+rz*Math.sqrt(Math.max(0,1-(x/rx)**2));}}return 5;};
- const eyeC={}[L.eyes]||'#4a2e1a';[-1,1].forEach(sd=>{const ez=fz(1.75,.55)-.28;sp(.95,.62,.4,'#f6f3ee',sd*1.75,.55,ez,head);sp(.52,.56,.3,eyeC,sd*1.75,.55,ez+.23,head);sp(.26,.3,.2,'#0b0806',sd*1.75,.55,ez+.38,head);sp(.12,.12,.08,'#fff',sd*1.6,.75,ez+.46,head);
-  const br=bx(1.7,.32,.5,hair,sd*1.75,1.75,fz(1.75,1.75)-.12,head);br.rotation.z=sd*-.12;sp(.6,1.2,.9,skin,sd*4.6,-.2,.2,head);if(fem){const ls=bx(1.6,.18,.4,'#1a1210',sd*1.85,1.0,ez+.2,head);ls.rotation.z=sd*-.25;}});
- sp(.75,1.25,.95,skin,0,-.6,fz(0,-.6)-.35,head);sp(1.45,.4,.45,fem?'#b25a62':shade(SK,-.28),0,-2.75,fz(0,-2.75)-.18,head);
+ const eyeC=L.eyeColor||(fem?'#4f8a52':'#5a3a22');[-1,1].forEach(sd=>{const ex=sd*1.85,ey=.5,ez=fz(1.85,.5)-.32;const sc=sp(1.22,.74,.42,'#f7f4ef',ex,ey,ez,head);sc.rotation.z=sd*.1;sp(.66,.7,.3,eyeC,ex-sd*.05,ey,ez+.24,head);sp(.32,.36,.2,'#0b0806',ex-sd*.05,ey,ez+.4,head);sp(.15,.15,.08,'#fff',ex-sd*.25,ey+.28,ez+.48,head);sp(.08,.08,.05,'#fff',ex+sd*.15,ey-.22,ez+.46,head);
+  const lid=bx(2.6,fem?.26:.14,.5,fem?'#1a1210':shade(SK,-.35),ex,ey+.66,ez+.16,head);lid.rotation.z=sd*.1;if(fem){const fl=bx(.6,.16,.35,'#1a1210',ex+sd*1.4,ey+.82,ez-.05,head);fl.rotation.z=sd*.5;}const ll=bx(2,.12,.3,shade(SK,-.3),ex,ey-.68,ez+.12,head);ll.rotation.z=-sd*.06;
+  {const bc=shade(hairC,-.15);for(let i=0;i<=8;i++){const t=i/8,bxp=.9+t*1.9,by=1.86+Math.sin(t*Math.PI*.9)*.2-t*.08,th=(fem?.13:.19)*(1-t*.45);const b=sp(.34,th,.2,bc,sd*bxp,by,fz(bxp,by)-.05,head);b.rotation.z=sd*(.25-t*.6);}}sp(.6,1.2,.9,skin,sd*4.6,-.2,.2,head);});
+ sp(.36,.6,.32,skin,0,-.7,fz(0,-.7)-.24,head);sp(.5,.32,.34,skin,0,-1.3,fz(0,-1.3)-.18,head);const lc=fem?'#c27170':shade(SK,-.18);sp(1.15,.22,.34,lc,0,-2.5,fz(0,-2.5)-.2,head);sp(1.05,.3,.36,shade(lc,-.05),0,-2.95,fz(0,-2.95)-.22,head);
  if(L.beard==='skæg')TUBE([[0,-1,-3.6,.5,.5],[0,-2.6,-1,4.4,2.6],[0,-4,2.4,3.4,2.4],[0,-4.6,4,1.4,1.4],[0,-4.6,4.6,.4,.4]],hair,head,{seg:4,M:14});
  if(L.beard==='overskæg')bx(3.2,.7,.8,hair,0,-1.9,fz(0,-1.9)-.1,head);
  // hår
