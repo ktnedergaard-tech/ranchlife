@@ -156,7 +156,7 @@ function seeded(seed){let s=Math.abs(Math.floor(seed))%2147483647||7;return()=>(
 const kr=n=>Math.round(n).toLocaleString('da-DK')+' kr';
 const PI2=Math.PI*2;
 const angLerp=(a,b,t)=>{const d=((b-a+Math.PI)%PI2+PI2)%PI2-Math.PI;return a+d*t;};
-function pastel(hex){if(!hex||hex[0]!=='#')return hex;let c=hex.slice(1);if(c.length===3)c=c.split('').map(x=>x+x).join('');let r=parseInt(c.slice(0,2),16)/255,g=parseInt(c.slice(2,4),16)/255,b=parseInt(c.slice(4,6),16)/255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h=0,sat=0,l=(mx+mn)/2;if(mx!==mn){const d=mx-mn;sat=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4;h/=6;}sat=Math.min(sat,.55);l=Math.max(l,.72);const f=(p,q,t)=>{t=(t+1)%1;return t<1/6?p+(q-p)*6*t:t<.5?q:t<2/3?p+(q-p)*(2/3-t)*6:p;},q=l<.5?l*(1+sat):l+sat-l*sat,p=2*l-q,hx=x=>Math.round(x*255).toString(16).padStart(2,'0');return'#'+hx(f(p,q,h+1/3))+hx(f(p,q,h))+hx(f(p,q,h-1/3));}
+function pastel(hex){if(!hex||hex[0]!=='#'||hex==='#1c1c20')return hex;let c=hex.slice(1);if(c.length===3)c=c.split('').map(x=>x+x).join('');let r=parseInt(c.slice(0,2),16)/255,g=parseInt(c.slice(2,4),16)/255,b=parseInt(c.slice(4,6),16)/255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h=0,sat=0,l=(mx+mn)/2;if(mx!==mn){const d=mx-mn;sat=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4;h/=6;}sat=Math.min(sat,.55);l=Math.max(l,.72);const f=(p,q,t)=>{t=(t+1)%1;return t<1/6?p+(q-p)*6*t:t<.5?q:t<2/3?p+(q-p)*(2/3-t)*6:p;},q=l<.5?l*(1+sat):l+sat-l*sat,p=2*l-q,hx=x=>Math.round(x*255).toString(16).padStart(2,'0');return'#'+hx(f(p,q,h+1/3))+hx(f(p,q,h))+hx(f(p,q,h-1/3));}
 function shade(hex,amt){let c=hex.replace('#','');if(c.length===3)c=c.split('').map(x=>x+x).join('');let r=parseInt(c.slice(0,2),16),g=parseInt(c.slice(2,4),16),b=parseInt(c.slice(4,6),16);const f=amt<0?0:255,p=Math.abs(amt);r=Math.round((f-r)*p+r);g=Math.round((f-g)*p+g);b=Math.round((f-b)*p+b);return'#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
 const pctx=document.createElement('canvas').getContext('2d');
 
@@ -230,9 +230,9 @@ const LOOK_OPTS={
  hairColor:['#2a1b12','#5b3a20','#9a6633','#d8b46a','#efe0b0','#b0472a','#8d8d8d','#1b1b1f'],
  beard:['ingen','skæg','overskæg'],
  top:['t-shirt','langærmet','hættetrøje','ridejakke','ternet skjorte','vest'],
- topColor:['#a9c8e8','#f2a9a0','#a8d8b0','#f3eadb','#c9c3d6','#f5d59a','#cdb4e6','#f5b8cf'],
+ topColor:['#1c1c20','#a9c8e8','#f2a9a0','#a8d8b0','#f3eadb','#c9c3d6','#f5d59a','#cdb4e6','#f5b8cf'],
  bottom:['jeans','ridebukser','shorts','nederdel'],
- bottomColor:['#9fb6d6','#efe7d6','#c8bfb6','#d6bfa2','#b3c2de','#bfd1a8'],
+ bottomColor:['#1c1c20','#9fb6d6','#efe7d6','#c8bfb6','#d6bfa2','#b3c2de','#bfd1a8'],
  shoes:['ridestøvler','gummistøvler','sneakers','jodhpurstøvler'],
  hat:['ingen','kasket','cowboyhat','hue']
 };
@@ -472,6 +472,9 @@ function canvasTex(w,h,fn,rep){const c=document.createElement('canvas');c.width=
 
 /* ---- people ---- */
 const checkTex={};
+function setStir(st,p){st.ir.position.copy(p);const d=_sv.copy(p).add(_sv2.set(0,4.1,0)).sub(st.top),L=d.length();st.lth.position.copy(st.top).addScaledVector(d,.5);st.lth.scale.set(1,L,1);st.lth.quaternion.setFromUnitVectors(_sv3.set(0,1,0),d.normalize());}
+const _sv=new THREE.Vector3(),_sv2=new THREE.Vector3(),_sv3=new THREE.Vector3();
+function fitStirrups(hm,P){if(!hm||!hm.STIR||!P||!P.legs)return;hm.g.updateMatrixWorld(true);P.g.updateMatrixWorld(true);const ft=P.legs.map(l=>hm.sB.worldToLocal(l.knee.localToWorld(new THREE.Vector3(0,-15.6,1.2))));hm.STIR.forEach(st=>{const f=ft.reduce((b,q)=>Math.sign(q.x)===st.sd?q:b,ft[0]);setStir(st,_sv3.copy(f));});}
 function makePerson(L){const g=new THREE.Group(),fem=L.body==='feminin',sw=fem?1:1.14,key0=JSON.stringify(L);
  const SK=L.skin,skin=mat(SK,{roughness:.62}),hairC=L.hairColor,hair=mat(hairC,{roughness:.55,metalness:.04}),shoeC=shoeCol(L),shoe=mat(shoeC,{roughness:.45});
  const PC=pastel(L.bottom==='ridebukser'&&L.bottomColor===undefined?'#d8cdb4':L.bottomColor),TC=pastel(L.topColor);
@@ -489,7 +492,7 @@ function makePerson(L){const g=new THREE.Group(),fem=L.body==='feminin',sw=fem?1
   topPaint(c,W,H,W*(crop?.42:.28));if(crop){c.fillStyle=SK;c.fillRect(W*.3,0,W*.12,H);}});
  const T=[[0,27.6,-.3,1,1],[0,28.8,-.3,5.7*sw,3.9],[0,30.2,-.3,6.6*sw,4.3],[0,32.4,-.3,6.8*sw,4.6],[0,37,0,5.2*sw,3.8],[0,42,.2,5.6*sw,4.1],[0,46.5,fem?.6:.3,6*sw,fem?4.8:4.5],[0,51.2,0,6.6*sw,4],[0,53.2,0,5.4*sw,3.7],[0,54.6,0,3.6,3],[0,55.6,0,.5,.5]];
  const torso=TUBE(T,torsoM,g,{seg:6,M:20});
-  if(L.top==='hættetrøje')sp(5.2,3.4,2.6,mat(shade(TC,-.08)),0,54.6,-4.6,g);
+  if(L.top==='hættetrøje'){const hm2=mat(shade(TC,-.08),{roughness:.85});const hd=sp(4.7,3.1,1.5,hm2,0,52.4,-3.85*(fem?1.05:1.1)-.9,g);hd.rotation.x=.18;const hr=mk(new THREE.TorusGeometry(3.4,.55,8,20,Math.PI),hm2,1,1,1,0,51.4,-4.3*(fem?1.05:1.1),g);hr.rotation.set(-.2,0,Math.PI);}
  if(skirt)mk(new THREE.CylinderGeometry(7.4,10.5,11,18,1,true),mat(PC,{roughness:.8,side:THREE.DoubleSide}),1,1,1,0,26.5,0,g);
  TUBE([[0,54.6,.2,2.4,2.4],[0,58.6,.5,2.2,2.3],[0,60,.6,.4,.4]],skin,g,{seg:4,M:12});
  // hoved
@@ -643,7 +646,7 @@ function makeHorse(B,id){const g=new THREE.Group(),body=new THREE.Group();g.add(
  const em=new THREE.MeshStandardMaterial({color:'#e8e2d4',roughness:.9,side:THREE.DoubleSide});shell(TP,lo-.005,lo+.06,1,1.35,em,-34.4,27.4);shell(TP,hi-.06,hi+.005,1,1.35,em,-34.4,27.4);
  const sm=new THREE.MeshStandardMaterial({color:'#2a2a2a',roughness:.8,side:THREE.DoubleSide});shell(TP,hi,lo+PI2,1,.7,sm,3,6);shell(TP,hi,lo+PI2,1,.7,sm,10,13);
  rug.userData.mat=rm;rug.visible=false;}
- const saddle=new THREE.Group();body.add(saddle);const sB=new THREE.Group();saddle.add(sB);sB.scale.set(1/HQ.bw,1/HQ.bh,1);sB.position.y=-55*(1-HQ.bh)/HQ.bh;
+ const STIR=[];const saddle=new THREE.Group();body.add(saddle);const sB=new THREE.Group();saddle.add(sB);sB.scale.set(1/HQ.bw,1/HQ.bh,1);sB.position.y=-55*(1-HQ.bh)/HQ.bh;
  const shellB=(A0,A1,add,m,z0,z1,par)=>{const P=TP.map(q=>V(q[0],q[1],q[2])),cv=new THREE.CatmullRomCurve3(P,false,'centripetal'),N=(TP.length-1)*24,M=24,pos=[],idx=[],uv=[],side=V(1,0,0);
   const cr=(i,t,c)=>{const n=TP.length,q=k=>TP[clamp(k,0,n-1)][c],p0=q(i-1),p1=q(i),p2=q(i+1),p3=q(i+2);return Math.max(.3,.5*(2*p1+(-p0+p2)*t+(2*p0-5*p1+4*p2-p3)*t*t+(-p0+3*p1-3*p2+p3)*t*t*t));};
   const ring=[];for(let k=0;k<=N;k++){const u=k/N,c=cv.getPoint(u);if(c.z>=z0&&c.z<=z1)ring.push(u);}const R=ring.length;
@@ -657,7 +660,7 @@ function makeHorse(B,id){const g=new THREE.Group(),body=new THREE.Group();g.add(
   [1,-1].forEach(sd=>{shellB(sd>0?T2+.62:T2-1.42,sd>0?T2+1.42:T2-.62,1,lea,-1.5,9.5);});
   shellB(.5*Math.PI-1.3,.5*Math.PI+1.3,.7,mat('#1a120e',{side:THREE.DoubleSide}),4.5,7.5);
   const sp5=TP.reduce((b,q)=>Math.abs(q[2]-5)<Math.abs(b[2]-5)?q:b,TP[0]),RX=sp5[3],CY=sp5[1];
-  [1,-1].forEach(sd=>{bx(.6,17,1.2,'#1a120e',sd*(RX+1.4),CY-7.5,6,sB);mk(new THREE.TorusGeometry(2.1,.33,6,14),'#c8ccd0',1,1,1,sd*(RX+1.6),CY-17,6,sB);bx(1,.55,4,'#c8ccd0',sd*(RX+1.6),CY-19,6,sB);});}
+  [1,-1].forEach(sd=>{const top=V(sd*(RX+1.4),CY+1,6),lth=bx(.6,1,1.2,'#1a120e',0,0,0,sB),ir=new THREE.Group();sB.add(ir);mk(new THREE.TorusGeometry(2.1,.33,6,14),'#c8ccd0',1,1,1,0,2,0,ir);bx(1.1,.55,4.2,'#c8ccd0',0,0,0,ir);STIR.push({sd,top,lth,ir,def:V(sd*(RX+1.6),CY-19,6)});});}
  TUBE([[-11.5,1.3,.5,.5],[-9.6,2.3,6.2,2.3],[-4,1.05,8.6,1.7],[3,1,8.9,1.6],[9,1.65,6.4,2],[11.4,1.7,.5,.5]].map(q=>[0,topAt(q[0])+.45+q[1],q[0],q[2],q[3]]),mat('#1d1512',{roughness:.45}),sB,{seg:6,M:18});const seatY=topAt(2)+.45+1+1.6;
  saddle.scale.set(HQ.bw,HQ.bh,1);saddle.position.y=55*(1-HQ.bh);
  const tq=(a,b)=>new THREE.Quaternion().setFromUnitVectors(V(0,0,1),b.clone().sub(a).normalize());
@@ -665,14 +668,14 @@ function makeHorse(B,id){const g=new THREE.Group(),body=new THREE.Group();g.add(
  const bridle=strap('#3b2416',.7);[-1,1].forEach(sd=>limb(V(sd*5,19,37),V(sd*6,9,-12),.5,.5,'#3b2416',bridle));
  const halter=strap('#2f6fb3',1);
  const headRef=new THREE.Object3D();headRef.position.set(0,16,38);hI.add(headRef);
- g.scale.setScalar(B.size*KS);return{kind:'horse',rug,g,body,neck,tail,legs,saddle,bridle,halter,headRef,seatY};}
+ g.scale.setScalar(B.size*KS);const hmO={kind:'horse',rug,g,body,neck,tail,legs,saddle,bridle,halter,headRef,seatY,STIR,sB};STIR.forEach(st=>setStir(st,st.def));return hmO;}
 function horseAngles(gt,ph,key,front,air){if(air)return front?[1.15,-.7]:[-.7,-.25];const amp=[0,.34,.5,.72][gt];
  const off=gt===1?{lh:0,lf:.25,rh:.5,rf:.75}:gt===2?{lf:0,rh:0,rf:.5,lh:.5}:gt===3?{lh:0,rh:.12,lf:.38,rf:.5}:{lh:0,lf:0,rh:0,rf:0};
  const p=(ph+off[key])*PI2,sw=Math.sin(p)*amp,bend=Math.max(0,Math.cos(p))*amp*1.5;return front?[sw,sw-bend]:[sw*.8-.08,sw*.8+bend*.55+.12];}
 function airLegs(at,key,front){const ss=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};const L=(p,q,u)=>[lerp(p[0],q[0],u),lerp(p[1],q[1],u)];
  if(front)return L(L([.6,.1],[1.3,-.95],ss(0,.2,at)),[.32,.22],ss(.5,.85,at));
  return L(L([-.75,-.4],[.5,1.05],ss(.18,.5,at)),[.08,.25],ss(.75,1,at));}
-function animHorse(m,o){const gt=o.gt||0,ph=o.phase||0,t=performance.now()/1000;let jh=o.jh||0,at=o.airT;if(!jh&&(o.z||0)>6){jh=o.z;at=.5;}at=clamp(at??.5,0,1);const air=jh>2;
+function animHorse(m,o){if(m.STIR)m.STIR.forEach(st=>setStir(st,st.def));const gt=o.gt||0,ph=o.phase||0,t=performance.now()/1000;let jh=o.jh||0,at=o.airT;if(!jh&&(o.z||0)>6){jh=o.z;at=.5;}at=clamp(at??.5,0,1);const air=jh>2;
  let by=gt===2?-Math.abs(Math.sin(ph*PI2*2))*2.2:gt===3?Math.sin(ph*PI2)*2.2:gt===1?Math.sin(ph*PI2*2)*.7:0,pitch=0;
  if(air){const sc=m.g.scale.y||1;const fH=jh*Math.sin(Math.PI*clamp(at/.86,0,1)),hH=jh*Math.sin(Math.PI*clamp((at-.14)/.86,0,1));by=(fH+hH)/2/sc;pitch=Math.atan2((hH-fH)/sc,48)*.75;}
  m.body.position.y=by;m.body.rotation.x=pitch;
@@ -1089,7 +1092,7 @@ function render3D(t,dt){if(!S||!renderer)return;const p=S.p,play=mode==='play';c
  // player
  if(play){if(!playerM||playerM.key!==JSON.stringify(S.look)){if(playerM)scene.remove(playerM.g);playerM=makePerson(S.look);scene.add(playerM.g);}
   playerM.g.visible=true;const ra=p.ride&&animalById(p.ride);
-  if(ra&&MODELS.get(ra.id)){const hm=MODELS.get(ra.id);hm.body.localToWorld(_v.set(0,hm.seatY||74,2));playerM.g.position.copy(_v);playerM.g.position.y-=30*KS;playerM.g.rotation.y=hm.g.rotation.y;animPerson(playerM,{ride:true});}
+  if(ra&&MODELS.get(ra.id)){const hm=MODELS.get(ra.id);hm.body.localToWorld(_v.set(0,hm.seatY||74,2));playerM.g.position.copy(_v);playerM.g.position.y-=30*KS;playerM.g.rotation.y=hm.g.rotation.y;animPerson(playerM,{ride:true});fitStirrups(hm,playerM);}
   else{playerM.g.position.set(p.x,0,p.y);playerM.g.rotation.y=angLerp(playerM.g.rotation.y,p.rot||0,.3);animPerson(playerM,{moving:p.moving,ph:p.ph,run:p.running,carry:!!p.carry,busy:!!p.busy});}
   const ld=p.lead&&animalById(p.lead),lm=ld&&MODELS.get(ld.id);if(lm&&lm.headRef){playerM.hand.getWorldPosition(_v);lm.headRef.getWorldPosition(_w);setRope(leadRope,_v,_w,8);leadRope.material.color.set(ld.kind==='horse'?'#2f6fb3':'#b8342a');}else leadRope.visible=false;}
  else if(playerM)playerM.g.visible=false;
@@ -1342,7 +1345,7 @@ function syncLessonL(L,slot){const key=L?L.day+'|'+L.key:'';let LM=LMS[slot];
  if(!L)return;
  L.riders.forEach((r,i)=>{const o=LM.list[i];if(!o)return;o.h.g.position.set(r.x,0,r.y);o.h.g.rotation.y=angLerp(o.h.g.rotation.y,r.rot||0,.2);
   animHorse(o.h,{gt:r.gt,phase:r.phase,jh:r.jh||0,airT:r.airT,bend:turnBend(o.h,o.h.g.rotation.y),saddle:true,bridle:true});if(r.buck>0)o.h.body.rotation.x=-Math.sin((1-r.buck/.9)*PI2)*.3;if(r.hop>0)o.h.g.position.y+=Math.sin((1-r.hop/.5)*Math.PI)*8;if(r.poopT>0)o.h.tail.rotation.x=-.8;
-  o.h.body.localToWorld(_v.set(0,o.h.seatY||74,2));o.p.g.position.copy(_v);o.p.g.position.y-=30*.8*KS;o.p.g.rotation.y=o.h.g.rotation.y;animPerson(o.p,{ride:true});
+  o.h.body.localToWorld(_v.set(0,o.h.seatY||74,2));o.p.g.position.copy(_v);o.p.g.position.y-=30*.8*KS;o.p.g.rotation.y=o.h.g.rotation.y;animPerson(o.p,{ride:true});fitStirrups(o.h,o.p);
   o.lab.position.set(r.x,_v.y+40,r.y);o.bang.visible=!!r.help;o.bang.position.set(r.x,_v.y+58,r.y);});
  LM.parents.forEach(m=>animPerson(m,{moving:false}));
  if(LM.helper){const A=lessonArena(L),m=LM.helper;let tx=A.x+A.w/2+60,tz=A.y+A.h/2;if(L.help&&L.help.helper){const r=L.riders[L.help.i];if(r){tx=r.x+22;tz=r.y+22;}}else{const pl=(S.piles||[]).find(q=>inR(q.x,q.y,A));if(pl){tx=pl.x+8;tz=pl.y;if(Math.hypot(m.g.position.x-tx,m.g.position.z-tz)<6)S.piles=S.piles.filter(q=>q!==pl);}}
@@ -1478,7 +1481,7 @@ const PARTM=new Map();
 function syncPart(){const live=new Set();S.animals.forEach(a=>{if(!a.part||!(a.partOn||a.partMuck))return;if(a.kind==='horse'&&a.partOn&&a.state!=='part')return;if(a.partMuck&&a.state!=='box')return;live.add(a.id);let o=PARTM.get(a.id);
  if(!o){const m=makePerson(a.part.look);scene.add(m.g);const lab=labelSprite(a.part.name+' · part','rgba(47,90,138,.88)','#ffffff',56,14,'bold 28px Figtree, sans-serif');scene.add(lab);o={m,lab};PARTM.set(a.id,o);}
  if(a.partMuck){const b=BOXES[a.box],zz=b.y+(a.box<6?22:-22);o.m.g.position.set(b.x+30,0,zz);o.m.g.rotation.y=-Math.PI/2;animPerson(o.m,{busy:true});o.lab.position.set(b.x+30,80*KS,zz);}
- else if(a.kind==='horse'){const hm=MODELS.get(a.id);if(!hm)return;hm.body.localToWorld(_v.set(0,hm.seatY||74,2));o.m.g.position.copy(_v);o.m.g.position.y-=30*KS;o.m.g.rotation.y=hm.g.rotation.y;animPerson(o.m,{ride:true});o.lab.position.set(a.x,_v.y+40,a.y);}
+ else if(a.kind==='horse'){const hm=MODELS.get(a.id);if(!hm)return;hm.body.localToWorld(_v.set(0,hm.seatY||74,2));o.m.g.position.copy(_v);o.m.g.position.y-=30*KS;o.m.g.rotation.y=hm.g.rotation.y;animPerson(o.m,{ride:true});fitStirrups(hm,o.m);o.lab.position.set(a.x,_v.y+40,a.y);}
  else{const x=CAGE.x+90-(a.id%3)*18;o.m.g.position.set(x,0,CAGE.y+170);o.m.g.rotation.y=Math.PI;animPerson(o.m,{busy:true});o.lab.position.set(x,80*KS,CAGE.y+170);}});
  PARTM.forEach((o,id)=>{if(!live.has(id)){scene.remove(o.m.g);scene.remove(o.lab);PARTM.delete(id);}});}
 
@@ -1572,7 +1575,7 @@ const FAMM=new Map();
 function syncFamily(){if(!S.family)return;const live=new Set();S.family.forEach((m,i)=>{if(i===S.cur)return;live.add(i);let o=FAMM.get(i);const key=JSON.stringify(m.look);
  if(!o||o.key!==key){if(o){scene.remove(o.m.g);scene.remove(o.lab);}const mm=makePerson(m.look);scene.add(mm.g);const lab=labelSprite(m.name,'rgba(20,28,18,.72)','#f3ead2',40,10,'bold 30px Figtree, sans-serif');scene.add(lab);o={m:mm,lab,key};FAMM.set(i,o);}
  const ai=m.ai||{},p=m.p;o.m.g.visible=!ai.sleep&&!ai.away;o.lab.visible=!ai.sleep&&!ai.away;
- if(ai.riding){const hm=MODELS.get(ai.riding);if(hm){hm.body.localToWorld(_v.set(0,hm.seatY||74,2));o.m.g.position.copy(_v);o.m.g.position.y-=30*KS*(m.look.child?.8:1);o.m.g.rotation.y=hm.g.rotation.y;animPerson(o.m,{ride:true});o.lab.position.set(p.x,_v.y+40,p.y);return;}}
+ if(ai.riding){const hm=MODELS.get(ai.riding);if(hm){hm.body.localToWorld(_v.set(0,hm.seatY||74,2));o.m.g.position.copy(_v);o.m.g.position.y-=30*KS*(m.look.child?.8:1);o.m.g.rotation.y=hm.g.rotation.y;animPerson(o.m,{ride:true});fitStirrups(hm,o.m);o.lab.position.set(p.x,_v.y+40,p.y);return;}}
  o.m.g.position.set(p.x,0,p.y);o.m.g.rotation.y=angLerp(o.m.g.rotation.y,p.rot||0,.25);animPerson(o.m,{moving:p.moving,ph:p.ph||0,busy:!!p.busyA});o.lab.position.set(p.x,(m.look.child?62:76)*KS,p.y);});
  FAMM.forEach((o,i)=>{if(!live.has(i)){scene.remove(o.m.g);scene.remove(o.lab);FAMM.delete(i);}});}
 
@@ -1956,7 +1959,7 @@ function startMinigame(a,mode2,s){const isH=a.kind==='horse';const n=isH?8:10;co
    M.obs.forEach(o=>{if(!o.done&&Math.abs(o.x-M.x)<ax&&M.z<oh&&!o.hit){o.hit=true;M.faults+=4;snd('bad');o.j.poles.forEach((p,k)=>{if(k===0||!isH){p.position.y=2;p.position.x+=8;p.rotation.z=.15;}});}if(!o.done&&o.x<M.x-ax){o.done=true;if(!o.hit)snd('ok');}});
    if(M.x>=M.end){M.done=true;setTimeout(()=>endMg(M,s,mode2),700);}}
   const zz=M.z*vis;m.g.position.set(M.x,isH?0:zz+Math.abs(Math.sin(M.ph*Math.PI))*3,0);
-  if(isH){animHorse(m,{gt:3,phase:M.ph,jh:M.z>.5?vz0*vz0/(2*grav):0,airT:clamp((vz0-M.vz)/(2*vz0),0,1),saddle:true,bridle:true});m.body.localToWorld(_v.set(0,m.seatY||74,2));rider.g.position.copy(_v);rider.g.position.y-=30;rider.g.rotation.y=Math.PI/2;animPerson(rider,{ride:true});}
+  if(isH){animHorse(m,{gt:3,phase:M.ph,jh:M.z>.5?vz0*vz0/(2*grav):0,airT:clamp((vz0-M.vz)/(2*vz0),0,1),saddle:true,bridle:true});m.body.localToWorld(_v.set(0,m.seatY||74,2));rider.g.position.copy(_v);rider.g.position.y-=30;rider.g.rotation.y=Math.PI/2;animPerson(rider,{ride:true});fitStirrups(m,rider);}
   if(isH){cam.position.set(M.x+95,78,430);cam.lookAt(M.x+135,52,0);}else{cam.position.set(M.x+30,28,150);cam.lookAt(M.x+48,11,0);}
   dl.position.set(M.x-200,600,400);dl.target.position.set(M.x,0,0);
   MGR.render(sc,cam);info.textContent='Fejl: '+M.faults+'   ·   Tid: '+M.t.toFixed(1)+' s';
